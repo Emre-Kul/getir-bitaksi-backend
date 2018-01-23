@@ -6,10 +6,8 @@ app.get('/',(req,res)=>{
 });
 
 app.get('/searchRecord',(req,res) => {
-    //let reqStr = JSON.stringify(req);
     console.dir(req);
     res.send("Will searchRecord");
-    //res.send(reqStr);    
 });
 
 const server = app.listen(8080,()=>{
