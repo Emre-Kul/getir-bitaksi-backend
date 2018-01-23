@@ -10,7 +10,8 @@ app.get('/',(req,res)=>{
 
 app.get('/searchRecord',(req,res) => {
     console.log("Getting Records");
-    //mongoCon.getRecords();
+    const recs = mongoCon.getRecords(req.query.startDate,req.query.endDate,req.query.minCount,req.query.maxCount);
+    //console.dir(recs.pretty());
     console.dir(req.query);
     res.send("Will searchRecord");
 });

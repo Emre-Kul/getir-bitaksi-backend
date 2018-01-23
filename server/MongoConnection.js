@@ -20,12 +20,17 @@ const MongoConnection = function(){
         this.client.close();    
     }
 
-    this.getRecords = (startDate, endDate) => {
-        return records = this.db.collection('records').find({});
-        //records.toArray((err,rec) => {
-            //console.log(rec);
-        //});
-        //return records;
+    this.getRecords = (startDate, endDate, minCount, maxCount) => {
+        const records = this.db.collection('records').find({
+            $and : [
+                {"createdAt" : { $gt : new Date(startDate)}},
+                {"createdAt" : { $lt : new Date(endDate)}}
+            ]
+        });
+        records.toArray( (err, rec) => {
+            console.log(rec);
+        });
+        return records;
     }
 
 }
