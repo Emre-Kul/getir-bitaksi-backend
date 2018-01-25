@@ -10,11 +10,17 @@ app.get('/', (req, res) => {
 
 app.get('/searchRecord', (req, res) => {
     console.log("Getting Records");
-    const records = mongoCon.getRecords(req.query);
-    records.toArray((err, rec) => {
-        res.send(rec);
+    const result = {};
+    const records = mongoCon.getRecords(req.query).then((recordList) => {
+        result.code = 0;
+        result.msg = "Success";
+        result.records = recordList;
+    }).catch( ()=> {
+        result.code = 1;
+        result.msg = "Error"; 
+    }).then( () => {
+        res.send(result); 
     });
-
 });
 
 mongoCon.connect(() => {

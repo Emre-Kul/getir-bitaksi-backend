@@ -21,26 +21,27 @@ const MongoConnection = function () {
     }
 
     this.getRecords = (payload) => {
-        const records = this.db.collection('records').aggregate(
-            [
-                {
-                    $project:
+            const records = this.db.collection('records').aggregate(
+                [
                     {
-                        key: '$key',
-                        createdAt: '$createdAt',
-                        totalCount: { $sum: '$counts' }
-                    }
-                },
-                {
-                    $match:
+                        $project:
+                        {
+                            _id : 0,
+                            key: 1,
+                            createdAt: 1,
+                            totalCount: { $sum: '$counts' }
+                        }
+                    },
                     {
-                        totalCount: { $gt: parseInt(payload.minCount), $lt: parseInt(payload.maxCount) },
-                        createdAt: { $gt: new Date(payload.startDate), $lt: new Date(payload.endDate) }
+                        $match:
+                        {
+                            totalCount: { $gt: parseInt(payload.minCount), $lt: parseInt(payload.maxCount) },
+                            createdAt: { $gt: new Date(payload.startDate), $lt: new Date(payload.endDate) }
+                        }
                     }
-                }
-            ]
-        );
-        return records;
+                ]
+            );
+            return records.toArray();
     }
 }
 
