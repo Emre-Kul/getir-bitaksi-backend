@@ -1,17 +1,20 @@
 const express = require('express');
+const bodyParser = require('body-parser')
 const app = express();
 
 const MongoConnection = require('./server/MongoConnection.js');
 const mongoCon = new MongoConnection();
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true})); 
+
 app.get('/', (req, res) => {
-    res.send("Hello World!");
+    res.send("Welcome!");
 });
 
-app.get('/searchRecord', (req, res) => {
-    console.log("Getting Records");
+app.post('/searchRecord', (req, res) => {
     const result = {};
-    const records = mongoCon.getRecords(req.query).then((recordList) => {
+    const records = mongoCon.getRecords(req.body).then((recordList) => {
         result.code = 0;
         result.msg = "Success";
         result.records = recordList;
