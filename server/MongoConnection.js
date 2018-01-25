@@ -1,13 +1,13 @@
 const MongoClient = require('mongodb').MongoClient;
 const config = require('./config.js');
 
-const MongoConnection = function(){
+const MongoConnection = function () {
     this.db = null;
     this.client = null;
 
     this.connect = (callback) => {
-        MongoClient.connect(config.MONGODB_URL,(err, client) => {
-            if(err)
+        MongoClient.connect(config.MONGODB_URL, (err, client) => {
+            if (err)
                 throw err;
             this.client = client;
             this.db = client.db(config.MONGODB_DB_NAME);
@@ -17,22 +17,31 @@ const MongoConnection = function(){
     }
 
     this.close = () => {
-        this.client.close();    
+        this.client.close();
     }
 
-    this.getRecords = (startDate, endDate, minCount, maxCount) => {
-        const records = this.db.collection('records').find({
-            $and : [
-                {"createdAt" : { $gt : new Date(startDate)}},
-                {"createdAt" : { $lt : new Date(endDate)}}
+    this.getRecords = (payload) => {
+        const records = this.db.collection('records').aggregate(
+            [
+                {
+                    $project:
+                    {
+                        key: '$key',
+                        createdAt: '$createdAt',
+                        totalCount: { $sum: '$counts' }
+                    }
+                },
+                {
+                    $match:
+                    {
+                        totalCount: { $gt: parseInt(payload.minCount), $lt: parseInt(payload.maxCount) },
+                        createdAt: { $gt: new Date(payload.startDate), $lt: new Date(payload.endDate) }
+                    }
+                }
             ]
-        });
-        records.toArray( (err, rec) => {
-            console.log(rec);
-        });
+        );
         return records;
     }
-
 }
 
 module.exports = MongoConnection;
