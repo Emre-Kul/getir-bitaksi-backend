@@ -27,7 +27,7 @@ app.post('/searchRecord', (req, res) => {
 });
 
 mongoCon.connect(() => {
-    const server = app.listen(8080, () => {
+    const server = app.listen(process.env.PORT || 8080, () => {
         let host = server.address().address;
         let port = server.address().port;
         console.log("Server Started At => %s:%s ", host, port);
